@@ -1,0 +1,83 @@
+<body style="background-color:lightgray;text-align: center;  font-size: 30px;">
+<div>□□□□□</div>
+<div>□□□□□</div>
+<div>□□□□□</div>
+<div>□□□□□</div>
+<div>□□□□□</div>
+<div>□□□□□</div>
+<br>
+<br>
+<br>
+<a id='alpha'>a b c d e f g h i j k l m n o p q r s t u v w x y z</a>
+<br>
+<br>
+<script type="module" src="./words.js"></script>
+<script type="module">
+import words from './words.js';
+const keys = Object.keys(words);
+window.keys = keys;
+window.solution = keys[Math.floor(Math.random() * keys.length)];
+window.count = 0;
+window.alpha = {'a': 0, 'b': 0, 'c': 0, 'd': 0, 'e': 0, 'f': 0, 'g': 0, 'h': 0, 'i': 0, 'j': 0, 'k': 0, 'l': 0, 'm': 0, 'n': 0, 'o': 0, 'p': 0, 'q': 0, 'r': 0, 's': 0, 't': 0, 'u': 0, 'v': 0, 'w': 0, 'x': 0, 'y': 0, 'z': 0}
+
+window.guess = function guess(word) {
+    let returner = []
+    let sofar = []
+    if (word == window.solution) {
+        alert("You've won!\nRefresh the page to restart.");
+		return;
+    }
+	for (let i = 0; i < 5; i++) {
+		sofar.push(word[i])
+		if (window.solution.includes(word[i])) {
+			window.alpha[word[i]] = 2;
+		}
+		else {
+			window.alpha[word[i]] = 1;
+		}
+		if (word[i] == window.solution[i]) {
+			returner.push('<span style="color: green;">'+word[i]+'</span>');
+			window.alpha[word[i]] = 3;
+		}
+		else if ((window.solution.match(new RegExp(word[i], "g")) || []).length >= sofar.filter(function(value){ return value === word[i];}).length){
+			let num = 0;
+			for (let j = 0; j < 5; j++) {
+				if (word[i] == word[j] && word[j] == window.solution[j]) {
+					num++;
+				}
+			}
+			if  ((5 + num) - word.replace(word[i], '').length <= window.solution.match(new RegExp(word[i], "g") || []).length) {
+				returner.push('<span style="color: yellow;">'+word[i]+'</span>');				
+			}
+			else {
+				returner.push('<span style="color: gray;">'+word[i]+'</span>');
+			}
+		}
+		else {
+			returner.push('<span style="color: gray;">'+word[i]+'</span>');
+		}
+	};
+    window.count += 1;
+	window.alphabet = '';
+	for (const [key, value] of Object.entries(window.alpha)) {
+	  if (value == 0) {
+		window.alphabet += key;
+	  }
+	  if (value == 1) {
+		window.alphabet += '<span style="color: gray;">'+key+'</span>'
+	  }
+	  if (value == 2) {
+		window.alphabet += '<span style="color: yellow;">'+key+'</span>'
+	  }
+	  if (value == 3) {
+		window.alphabet += '<span style="color: green;">'+key+'</span>'
+	  }
+	  window.alphabet += ' '
+
+	}
+    return returner.join('');
+};
+</script>
+<input id='inputguess' placeholder='Your guess.'></input> 
+<button onclick="if(window.keys.indexOf(document.getElementById('inputguess').value.toLowerCase()) < 0){alert('Not in diction.'); return;}; document.getElementsByTagName('div')[window.count].innerHTML = window.guess(document.getElementById('inputguess').value.toLowerCase()); document.getElementById('inputguess').value = ''; if (window.count == 6){alert('You have lost.. Refresh to try again. Word was ' + window.solution)};  document.getElementById('alpha').innerHTML = window.alphabet;">Guess</button>
+</body>
